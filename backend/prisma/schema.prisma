@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum RoleName {
+  VISITOR
+  MEMBER
+  DIRECTOR
+  ADMIN
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        RoleName @unique
+  permissions Json     @default("{}")
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  news      News[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+model News {
+  id        String     @id @default(cuid())
+  title     String
+  slug      String     @unique
+  summary   String?
+  content   String
+  imageUrl  String?
+  status    NewsStatus @default(DRAFT)
+  authorId  String
+  author    User       @relation(fields: [authorId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("news")
+}
+
+model Document {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  url              String
+  category         String
+  mimeType         String?
+  fileSize         Int?
+  visibilityRoleId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("documents")
+}
+
+model Circular {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  fileUrl          String?
+  number           String?
+  year             Int?
+  visibilityRoleId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("circulars")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}

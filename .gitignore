@@ -1,0 +1,41 @@
+# Dependências
+node_modules/
+.pnpm-store/
+
+# Ambiente
+.env
+.env*
+!.env.example
+.env.local
+.env.*.local
+
+# Build
+dist/
+.next/
+out/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cobertura de testes
+coverage/
+.nyc_output/
+
+# Prisma
+generated/
+
+# Uploads locais
+uploads/

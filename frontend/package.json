@@ -1,0 +1,39 @@
+{
+  "name": "ajucat-frontend",
+  "version": "1.0.0",
+  "description": "Frontend da AJUCAT - Associação dos Juízes Católicos",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.2.29",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "axios": "^1.7.9",
+    "react-hook-form": "^7.54.2",
+    "@hookform/resolvers": "^3.10.0",
+    "zod": "^3.24.1",
+    "js-cookie": "^3.0.5",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.469.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/js-cookie": "^3.0.6",
+    "typescript": "^5.7.3",
+    "tailwindcss": "^3.4.17",
+    "postcss": "^8.5.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.29"
+  }
+}

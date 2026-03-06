@@ -1,0 +1,29 @@
+version: '3.9'
+
+# Sobrescreve o docker-compose.yml para ambiente de desenvolvimento
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    ports:
+      - '5432:5432'
+
+  backend:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+    command: pnpm run start:dev
+
+  frontend:
+    build:
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    command: pnpm run dev

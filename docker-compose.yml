@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  # ─── Banco de dados PostgreSQL ───────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: ajucat_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ajucat}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ajucat_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ajucat}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ajucat}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ajucat_network
+
+  # ─── Backend NestJS ───────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: ajucat_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ajucat}:${POSTGRES_PASSWORD:-ajucat_password}@postgres:5432/${POSTGRES_DB:-ajucat}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-change_this_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change_refresh_in_production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      PORT: 3001
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ajucat_network
+    volumes:
+      - backend_uploads:/app/uploads
+
+  # ─── Frontend Next.js ─────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+    container_name: ajucat_frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:3001/api/v1}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NEXT_PUBLIC_APP_NAME: AJUCAT
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - ajucat_network
+
+volumes:
+  postgres_data:
+    driver: local
+  backend_uploads:
+    driver: local
+
+networks:
+  ajucat_network:
+    driver: bridge
