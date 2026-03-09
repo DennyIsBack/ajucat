@@ -44,4 +44,4 @@ USER nestjs
 EXPOSE 3001
 
 # Executar migrações e iniciar aplicação
-CMD ["sh", "-c", "pnpm exec prisma migrate deploy && node dist/src/main.js"]
+CMD ["sh", "-c", "pnpm exec prisma migrate deploy && if [ \"$RUN_DB_SEED\" = \"true\" ]; then pnpm db:seed; fi && node dist/src/main.js"]

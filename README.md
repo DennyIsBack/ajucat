@@ -98,7 +98,42 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 O banco de dados será populado automaticamente (seeding) com um usuário **ADMIN** padrão:
 
 -   **E-mail:** `admin@ajucat.org.br`
--   **Senha:** `admin123`
+-   **Senha:** `Admin@123456`
+
+
+### Railway (produção)
+
+No Railway, as migrações (`prisma migrate deploy`) **não executam seed automaticamente**.
+
+Para garantir a criação do usuário admin e perfis iniciais, há duas opções:
+
+1. **Executar seed manualmente (uma vez)** após o primeiro deploy:
+
+```bash
+pnpm db:seed
+```
+
+2. **Executar seed automaticamente no start** definindo a variável de ambiente:
+
+```env
+RUN_DB_SEED=true
+```
+
+> Recomendação: após popular o banco inicial, altere para `RUN_DB_SEED=false` (ou remova), embora o seed atual use `upsert` e seja idempotente para usuários/roles padrão.
+
+
+### Troubleshooting Railway (API indisponível)
+
+Se os logs mostram que a aplicação subiu, mas o Railway retorna **"Application failed to respond"**, verifique:
+
+1. Se a aplicação está escutando em `0.0.0.0` (não apenas `localhost`).
+2. Se a variável `PORT` do Railway está sendo respeitada.
+3. URL correta da API: `https://<seu-dominio>.up.railway.app/api/v1`.
+
+O backend já está configurado para usar:
+
+- `HOST=0.0.0.0` (padrão)
+- `PORT` vindo do ambiente
 
 ### 3. Ambiente de Produção
 
