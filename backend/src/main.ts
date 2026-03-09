@@ -73,9 +73,10 @@ async function bootstrap() {
     logger.log('Swagger disponível em: /api/docs');
   }
 
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  logger.log(`🚀 Backend AJUCAT rodando na porta ${port}`);
+  const port = Number(process.env.PORT) || 3001;
+  const host = process.env.HOST || '0.0.0.0';
+  await app.listen(port, host);
+  logger.log(`🚀 Backend AJUCAT rodando em ${host}:${port}`);
   logger.log(`📚 Ambiente: ${process.env.NODE_ENV || 'development'}`);
 }
 
