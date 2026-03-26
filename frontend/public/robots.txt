@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /vise
+Allow: /vise/checkout
+Allow: /vise/success
+
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api
+
+Sitemap: https://vise.creativestudio.com/sitemap.xml
+
+# Crawl delay (in seconds)
+Crawl-delay: 1
+
+# Request rate
+Request-rate: 30/1m
